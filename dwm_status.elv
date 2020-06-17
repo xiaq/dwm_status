@@ -3,6 +3,12 @@
 # use ./lib/dwm_date
 modules = [ ]
 
+script = (src)[name]
+include = [(splits '/' $script)]
+includes = $include[:-1]
+includes = (joins '/' $includes)"/" 
+-source $includes"lib/dwm_date.elv"
+
 fn reduce [arr]{
   reduced = [ ] 
   for node $arr {
@@ -18,16 +24,20 @@ fn dwm_date {
 }
 
 fn dwm_battery {
-  raw_output = (acpi -b)
-  battery = (echo $raw_output | cut -d ',' -f 2 | cut -d ' ' -f 2)
-  direction = (echo $raw_output | cut -d ',' -f 1 | cut -d ' ' -f 3)
-  direction_symbol = '-'
-  if (eq $direction Charging) {
-    direction_symbol = '+'
-  } elif (eq $battery '100%') {
-    direction_symbol = ''
+  raw_output = [(acpi -b)]
+  for node $raw_output {
+    direction = (echo $node | cut -d ',' -f 1 | cut -d ' ' -f 3)
+    if (not-eq $direction "Unknown") {
+      battery = (echo $node | cut -d ',' -f 2 | cut -d ' ' -f 2)
+      direction_symbol = '-'
+      if (eq $direction Charging) {
+        direction_symbol = '+'
+      } elif (eq $battery '100%') {
+        direction_symbol = ''
+      }
+      modules = [ $@modules "[ "$battery$direction_symbol" ]" ]
+    }
   }
-  modules = [ $@modules "[ "$battery$direction_symbol" ]" ]
 }
 
 fn dwm_resources {

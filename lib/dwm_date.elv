@@ -1,3 +1,3 @@
-fn dwm_date {
-  echo (date)
+fn dwm_get_date {
+  echo "[ "(date "+DATE: %d/%m/%y TIME: %H:%M:%S")" ]"
 }
