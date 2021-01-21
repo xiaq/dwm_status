@@ -18,8 +18,8 @@ fn load_network {
       for output $output_raw {
         for direction $direction_symbols {
           if (str:contains $output $direction) {
-            titles = (helpers:reduce [(splits ' ' $output_raw[$counter])])
-            values = (helpers:reduce [(splits ' ' $output_raw[(+ $counter 1)])])
+            titles = (helpers:reduce [(str:split ' ' $output_raw[$counter])])
+            values = (helpers:reduce [(str:split ' ' $output_raw[(+ $counter 1)])])
 
             titles = (helpers:remove_node $titles $direction)
             counter2 = 0

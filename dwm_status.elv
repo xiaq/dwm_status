@@ -1,5 +1,6 @@
 #!/bin/elvish
 
+use str
 use ./lib/dwm_date
 use ./lib/dwm_battery
 use ./lib/dwm_resources
@@ -21,6 +22,6 @@ fn invoke_modules {
 }
 
 while $true {
-  xsetroot -name " "(invoke_modules | joins ' ')" "
+  xsetroot -name " "(invoke_modules | str:join ' ')" "
   sleep 1
 }
