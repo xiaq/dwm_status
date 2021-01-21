@@ -1,5 +1,6 @@
 #!/bin/elvish
 
+use str
 use ./lib/dwm_date
 use ./lib/dwm_battery
 use ./lib/dwm_resources
@@ -25,6 +26,6 @@ fn populate {
 
 while $true {
   populate
-  xsetroot -name " "(joins ' ' $modules)" "
+  xsetroot -name " "(str:join ' ' $modules)" "
   sleep 1
 }
