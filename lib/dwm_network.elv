@@ -1,11 +1,7 @@
 use str
-use math
-use ./helpers
 
-throughput = []
+last = $nil
 history = ""
-
-# ip -js link | from-json | pprint (one)
 
 fn load_network {
   rx = 0
@@ -21,16 +17,12 @@ fn load_network {
 }
 
 fn traffic {
-  throughput = [ $@throughput (load_network) ]
-  if (> (count $throughput) 1) {
-    run1 = $throughput[0]
-    run2 = $throughput[1]
-
-    download = (/ (- $run2[0] $run1[0]) 1024)
-    upload = (/ (- $run2[1] $run1[1]) 1024)
-
-    history = "[ RX: "(printf "%.2f" $download)" TX: "(printf "%.2f" $upload)" ]"
-    throughput = []
+  current = (load_network)
+  if $last {
+    rx_delta = (/ (- $current[0] $last[0]) 1024)
+    tx_delta = (/ (- $current[1] $last[1]) 1024)
+    history = "[ RX: "(printf "%.2f" $rx_delta)" TX: "(printf "%.2f" $tx_delta)" ]"
   }
+  last = $current
   put $history
 }
