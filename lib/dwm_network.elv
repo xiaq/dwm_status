@@ -8,43 +8,19 @@ net = [&]
 throughput = []
 history = ""
 
+# ip -js link | from-json | pprint (one)
+
 fn load_network {
-  interfaces = [(ip addr | awk '/state UP/ {print $2}')]
-  for node $interfaces {
-    node = (str:replace ":" "" $node)
-    if (not-eq $node "lo") {
-      output_raw = [(ip -s link show $node)]
-      counter = 0
-      for output $output_raw {
-        for direction $direction_symbols {
-          if (str:contains $output $direction) {
-            titles = (helpers:reduce [(str:split ' ' $output_raw[$counter])])
-            values = (helpers:reduce [(str:split ' ' $output_raw[(+ $counter 1)])])
-
-            titles = (helpers:remove_node $titles $direction)
-            counter2 = 0
-            
-            for title $titles {
-              net[$title] = $values[$counter2]
-              counter2 = (+ $counter2 1)
-            }
-
-            network[(str:replace ":" "" $direction)] = $net
-          }
-        }
-        counter = (+ $counter 1)
-      }
+  rx = 0
+  tx = 0
+  ip -j -s link | from-json | all (one) | each [iface]{
+    if (eq $iface[ifname] lo) {
+      continue
     }
+    rx = (+ $rx $iface[stats64][rx][bytes])
+    tx = (+ $tx $iface[stats64][tx][bytes])
   }
-
-  traffic = []
-  if (> (count $network) 0) {
-    keys $network | each [x]{ 
-      info = $network[$x]
-      traffic = [ $@traffic $info[bytes] ]
-    }
-    put $traffic
-  }
+  put [$rx $tx]
 }
 
 fn traffic {
@@ -56,7 +32,7 @@ fn traffic {
     download = (/ (- $run2[0] $run1[0]) 1024)
     upload = (/ (- $run2[1] $run1[1]) 1024)
 
-    history = "[ "(printf "%.2f" $download)" "(printf "%.2f" $upload)" ]"
+    history = "[ RX: "(printf "%.2f" $download)" TX: "(printf "%.2f" $upload)" ]"
     throughput = []
   }
   put $history

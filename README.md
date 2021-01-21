@@ -29,3 +29,7 @@ The script can be executed via
 `elvish [..path..to..]/dwm_status.elv &`
 
 However to ensure you do not have to manually run the script each time dwm is launched it is recommended that the above command is added to the .xinitrc file, and will therefore be spawned on `startx`.
+
+### Thanks
+
+Thanks to @xiaq for feedback on the module loader / network module.
