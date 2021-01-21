@@ -2,9 +2,6 @@ use str
 use math
 use ./helpers
 
-direction_symbols = [RX: TX:]
-network = [&]
-net = [&]
 throughput = []
 history = ""
 
