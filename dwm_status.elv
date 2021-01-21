@@ -5,7 +5,6 @@ use ./lib/dwm_date
 use ./lib/dwm_battery
 use ./lib/dwm_resources
 use ./lib/dwm_network
-modules = [ ]
 
 dispatch_table = [
   $dwm_date:get~
@@ -16,16 +15,13 @@ dispatch_table = [
   $dwm_network:traffic~
 ]
 
-fn populate {
-  modules = [ ]
-
+fn invoke_modules {
   for module $dispatch_table {
-    modules = [ $@modules ($module) ]
+    $module
   }
 }
 
 while $true {
-  populate
-  xsetroot -name " "(str:join ' ' $modules)" "
+  xsetroot -name " "(invoke_modules | str:join ' ')" "
   sleep 1
 }
